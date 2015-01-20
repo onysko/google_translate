@@ -9,7 +9,7 @@
 namespace samson\google;
 
 use samson\core\CompressableService;
-use samson\core\Event;
+use samsonphp\event\Event;
 
 /**
  * Translation using Google Translate API
@@ -91,19 +91,23 @@ class Translate extends CompressableService
         // Build url for translation
         $this->get .= '&q='.$text.'&source='.$this->source.'&target='.$this->target;
 
-        // Get result of get request in array format
-        $response = file_get_contents($this->get);
+        // Get result of get request in array format using curl
+        $curlHandler = curl_init($this->get);
+        curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curlHandler);
+        curl_close($curlHandler);
         $response = json_decode($response, true);
 
         // If we have some response
         if ($response != null) {
             // Detect errors
-            if (isset($obj['error'])) {
+            if (isset($response['error'])) {
                 // Create error message
-                $return = 'Translation has failed : '.$obj['error']['message'];
+                $return = 'Translation has failed : '.$response['error']['message'];
             } else {
+                trace($response);
                 // Get translated text from the response array
-                $return = $obj['data']['translations'][0]['translatedText'];
+                $return = $response['data']['translations'][0]['translatedText'];
             }
         } else {
             // Empty response error
