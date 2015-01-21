@@ -13,6 +13,9 @@ class MainTest extends \PHPUnit_Framework_TestCase
     /** @var \samson\google\Request */
     public $request;
 
+    /**
+     * 
+     */
     public function setUp()
     {
         \samson\core\Error::$OUTPUT = false;
@@ -55,6 +58,9 @@ class MainTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $this->instance->lastRequestStatus());
     }
 
+    /**
+     *
+     */
     public function testInValidTranslation()
     {
         $this->instance->init();
@@ -88,6 +94,9 @@ class MainTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(false, $this->instance->lastRequestStatus());
     }
 
+    /**
+     *
+     */
     public function testUnknownTranslation()
     {
         $this->instance->apiKey = 'google_api_key';
