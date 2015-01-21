@@ -39,6 +39,24 @@ class Translate extends CompressableService
     /** @var string Target language for translations */
     public $target;
 
+    protected function error($response)
+    {
+        // Failed status
+        $this->status = false;
+
+        // Create error message
+        return 'Translation has failed : '.$response['error']['message'];
+    }
+
+    protected function firstTranslated($response)
+    {
+        // Success status
+        $this->status = true;
+
+        // Get translated text from the response array
+        return $response['data']['translations'][0]['translatedText'];
+    }
+
     /**
      * Get translated text from Google Translate API answer
      * @param $json mixed JSON data for parsing
@@ -55,14 +73,7 @@ class Translate extends CompressableService
         // If we have some response
         if ($response != null) {
             // Detect errors
-            if (isset($response['error'])) {
-                // Create error message
-                $return = 'Translation has failed : '.$response['error']['message'];
-            } else {
-                // Get translated text from the response array
-                $return = $response['data']['translations'][0]['translatedText'];
-                $this->status = true;
-            }
+            $return = isset($response['error']) ? $this->error($response) : $this->firstTranslated($response);
         }
 
         // Return translated text or error message
