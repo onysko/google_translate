@@ -58,7 +58,6 @@ class Translate extends CompressableService
             if (isset($response['error'])) {
                 // Create error message
                 $return = 'Translation has failed : '.$response['error']['message'];
-                $this->status = false;
             } else {
                 // Get translated text from the response array
                 $return = $response['data']['translations'][0]['translatedText'];
