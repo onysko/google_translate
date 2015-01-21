@@ -24,6 +24,9 @@ class Translate extends CompressableService
     /** @var string Url string for translation request */
     protected $get;
 
+    /** @var bool Last request status */
+    protected $status = false;
+
     /** @var string Google API Key */
     public $apiKey;
 
@@ -49,13 +52,19 @@ class Translate extends CompressableService
             if (isset($response['error'])) {
                 // Create error message
                 $return = 'Translation has failed : '.$response['error']['message'];
+                // Translation has failed
+                $this->status = false;
             } else {
                 // Get translated text from the response array
                 $return = $response['data']['translations'][0]['translatedText'];
+                // Translation success
+                $this->status = true;
             }
         } else {
             // Empty response error
             $return = 'Translation has failed : Unknown error';
+            // Translation has failed
+            $this->status = false;
         }
 
         // Return translated text or error message
@@ -128,5 +137,14 @@ class Translate extends CompressableService
 
         // Return translated text or error message
         return $this->getTranslated($response);
+    }
+
+    /**
+     * Get bool status of last translation request
+     * @return bool Last request status
+     */
+    public function lastRequestStatus()
+    {
+        return $this->status;
     }
 }
