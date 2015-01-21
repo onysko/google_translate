@@ -81,13 +81,7 @@ class Translate extends CompressableService
         // If configuration for API Key is not set
         if (!isset($this->apiKey)) {
             // Signal error
-            Event::fire(
-                'error',
-                array(
-                    $this,
-                    'Cannot initialize GoogleTranslate module - Google API Key does not exists'
-                )
-            );
+            Event::fire('error', array($this, 'Cannot initialize Translate module - Google API Key does not exists'));
         } else {
             // Create default get url
             $this->get = 'https://www.googleapis.com/language/translate/v2?key='.$this->apiKey;
