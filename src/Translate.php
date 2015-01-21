@@ -27,6 +27,9 @@ class Translate extends CompressableService
     /** @var bool Last request status */
     protected $status = false;
 
+    /** @var Request Object for creating request on Google Translate API */
+    public $request;
+
     /** @var string Google API Key */
     public $apiKey;
 
@@ -76,6 +79,12 @@ class Translate extends CompressableService
      */
     public function init(array $params = array())
     {
+        if (!isset($this->request)) {
+            $this->request = new Request();
+        } else {
+            $this->request = new $this->request;
+        }
+
         // If configuration for API Key is not set
         if (!isset($this->apiKey)) {
             // Signal error
@@ -129,14 +138,8 @@ class Translate extends CompressableService
         // Build url for translation
         $url = $this->get.'&q='.$text.'&source='.$this->source.'&target='.$this->target;
 
-        // Get result of get request in array format using curl
-        $curlHandler = curl_init($url);
-        curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($curlHandler);
-        curl_close($curlHandler);
-
         // Return translated text or error message
-        return $this->getTranslated($response);
+        return $this->getTranslated($this->request->get($url));
     }
 
     /**
