@@ -49,25 +49,22 @@ class Translate extends CompressableService
         // Decode response from JSON to array
         $response = json_decode($json, true);
 
+        // Default response error
+        $return = 'Translation has failed : Unknown error';
+        $this->status = false;
+
         // If we have some response
         if ($response != null) {
             // Detect errors
             if (isset($response['error'])) {
                 // Create error message
                 $return = 'Translation has failed : '.$response['error']['message'];
-                // Translation has failed
                 $this->status = false;
             } else {
                 // Get translated text from the response array
                 $return = $response['data']['translations'][0]['translatedText'];
-                // Translation success
                 $this->status = true;
             }
-        } else {
-            // Empty response error
-            $return = 'Translation has failed : Unknown error';
-            // Translation has failed
-            $this->status = false;
         }
 
         // Return translated text or error message
