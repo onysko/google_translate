@@ -90,6 +90,8 @@ class MainTest extends \PHPUnit_Framework_TestCase
 
     public function testUnknownTranslation()
     {
+        $this->instance->apiKey = 'google_api_key';
+
         $this->instance->init();
 
         $this->instance->request = & $this->request;

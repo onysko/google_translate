@@ -51,7 +51,6 @@ class Translate extends CompressableService
 
         // Default response error
         $return = 'Translation has failed : Unknown error';
-        $this->status = false;
 
         // If we have some response
         if ($response != null) {
@@ -76,11 +75,8 @@ class Translate extends CompressableService
      */
     public function init(array $params = array())
     {
-        if (!isset($this->request)) {
-            $this->request = new Request();
-        } else {
-            $this->request = new $this->request;
-        }
+        // Create default or users Request object
+        $this->request = (!isset($this->request) || !class_exists($this->request)) ? new Request() : new $this->request;
 
         // If configuration for API Key is not set
         if (!isset($this->apiKey)) {
@@ -134,6 +130,9 @@ class Translate extends CompressableService
 
         // Build url for translation
         $url = $this->get.'&q='.$text.'&source='.$this->source.'&target='.$this->target;
+
+        // Set default last request status
+        $this->status = false;
 
         // Return translated text or error message
         return $this->getTranslated($this->request->get($url));
