@@ -34,6 +34,35 @@ class Translate extends CompressableService
     public $target;
 
     /**
+     * Get translated text from Google Translate API answer
+     * @param $json mixed JSON data for parsing
+     * @return string Translated text
+     */
+    protected function getTranslated($json)
+    {
+        // Decode response from JSON to array
+        $response = json_decode($json, true);
+
+        // If we have some response
+        if ($response != null) {
+            // Detect errors
+            if (isset($response['error'])) {
+                // Create error message
+                $return = 'Translation has failed : '.$response['error']['message'];
+            } else {
+                // Get translated text from the response array
+                $return = $response['data']['translations'][0]['translatedText'];
+            }
+        } else {
+            // Empty response error
+            $return = 'Translation has failed : Unknown error';
+        }
+
+        // Return translated text or error message
+        return $return;
+    }
+
+    /**
      * Module initialization
      */
     public function init(array $params = array())
@@ -89,32 +118,15 @@ class Translate extends CompressableService
         $text = rawurlencode($text);
 
         // Build url for translation
-        $this->get .= '&q='.$text.'&source='.$this->source.'&target='.$this->target;
+        $url = $this->get.'&q='.$text.'&source='.$this->source.'&target='.$this->target;
 
         // Get result of get request in array format using curl
-        $curlHandler = curl_init($this->get);
+        $curlHandler = curl_init($url);
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curlHandler);
         curl_close($curlHandler);
-        $response = json_decode($response, true);
-
-        // If we have some response
-        if ($response != null) {
-            // Detect errors
-            if (isset($response['error'])) {
-                // Create error message
-                $return = 'Translation has failed : '.$response['error']['message'];
-            } else {
-                trace($response);
-                // Get translated text from the response array
-                $return = $response['data']['translations'][0]['translatedText'];
-            }
-        } else {
-            // Empty response error
-            $return = 'Translation has failed : Unknown error';
-        }
 
         // Return translated text or error message
-        return $return;
+        return $this->getTranslated($response);
     }
 }
