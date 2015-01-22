@@ -23,15 +23,14 @@ class Google_TranslateConfig extends \samson\core\Config
 ## Creating translate request
 
 After creating configuration you can create request to Google Translate API.
+
 To create simple request you must define source language of you text and target language which you want to get.
 
 To identify languages you can use methods
 
-``` source($source)```
-
+```source($source)```
 and
-
-``` target($target)```
+```target($target)```
 
 For example you want to translate 'Hello World' to french:
 
