@@ -11,7 +11,7 @@
 
 Before using translate module methods, you must create configuration and enter your Google API Key for using Google Translate API
 
-All you need is create configuration class which is working thanks to [SamsonPHP module/service configuration](https://github.com/samsonos/php_fs/wiki/0.3-Configurating):
+All you need is create configuration class which is working thanks to [SamsonPHP module/service configuration](https://github.com/samsonphp/config):
 
 ```php
 class Google_TranslateConfig extends \samson\core\Config
@@ -28,15 +28,7 @@ To create simple request you must define source language of you text and target 
 
 To identify languages you can use methods
 
-```php
-source($source)
-```
-
-and
-
-```php
-target($target)
-```
+```source($source)``` and ```target($target)```
 
 For example you want to translate 'Hello World' to french:
 
@@ -72,7 +64,7 @@ $helloWorld = 'Hello World';
 // Translated text
 $bonjourLeMonde = $trans->source('gb')->target('fr')->trans($helloWorld);
 
-echo $bonjourLeMonde; // Is false, because gb locale is not found in Google language codes.
+echo $trans->lastRequestStatus(); // Is false, because gb locale is not found in Google language codes.
 // Variable $bonjourLeMonde in this case is equal to 'Invalid value'
 ```
 
