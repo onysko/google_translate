@@ -28,9 +28,15 @@ To create simple request you must define source language of you text and target 
 
 To identify languages you can use methods
 
-```source($source)```
+```php
+source($source)
+```
+
 and
-```target($target)```
+
+```php
+target($target)
+```
 
 For example you want to translate 'Hello World' to french:
 
@@ -50,7 +56,9 @@ $bonjourLeMonde = $trans->source('en')->target('fr')->trans($helloWorld);
 If you have some problems with API Key or you have make some error in defining source or target locales, you will get error from Google Translate API.
 You can check status of your request using method
 
-``` lastRequestStatus()```
+```php
+lastRequestStatus()
+```
 
 Example of using ``` lastRequestStatus()```:
 
