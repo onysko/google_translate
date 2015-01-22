@@ -6,7 +6,7 @@
  * Time: 16:39
  */
 
-namespace samson\google;
+namespace samsonphp\google\translate;
 
 
 class Request

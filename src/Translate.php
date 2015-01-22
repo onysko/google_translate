@@ -6,7 +6,7 @@
  * Time: 11:49
  */
 
-namespace samson\google;
+namespace samsonphp\google\translate;
 
 use samson\core\CompressableService;
 use samsonphp\event\Event;

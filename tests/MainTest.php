@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace samsonphp\google\translate;
 
 /**
  * Created by Vitaly Iegorov <egorov@samsonos.com>
