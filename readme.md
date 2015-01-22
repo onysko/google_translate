@@ -46,13 +46,7 @@ $bonjourLeMonde = $trans->source('en')->target('fr')->trans($helloWorld);
 ## Fixing translation errors
 
 If you have some problems with API Key or you have make some errors in defining source or target locales, you will get error from Google Translate API.
-You can check status of your request using method
-
-```php
-lastRequestStatus()
-```
-
-Example of using ``` lastRequestStatus()```:
+You can check status of your request using method ```lastRequestStatus()```:
 
 ```php
 /** @var \samson\google\Translate $trans Get SamsonPHP GoogleTranslate module */
@@ -63,9 +57,10 @@ $helloWorld = 'Hello World';
 
 // Translated text
 $bonjourLeMonde = $trans->source('gb')->target('fr')->trans($helloWorld);
+// Is false, because gb locale is not found in Google language codes.
 
-echo $trans->lastRequestStatus(); // Is false, because gb locale is not found in Google language codes.
-// Variable $bonjourLeMonde in this case is equal to 'Invalid value'
+// Will return 'Invalid value'
+echo $trans->lastRequestStatus(); 
 ```
 
 This module is working using [Google Translate API](https://cloud.google.com/translate/)
