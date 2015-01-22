@@ -1,5 +1,5 @@
 <?php
-namespace tests;
+namespace samsonphp\google\translate;
 
 /**
  * Created by Vitaly Iegorov <egorov@samsonos.com>
@@ -7,10 +7,10 @@ namespace tests;
  */
 class MainTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \samson\google\Translate */
+    /** @var \samsonphp\google\translate\Translate */
     public $instance;
 
-    /** @var \samson\google\Request */
+    /** @var \samsonphp\google\translate\Request */
     public $request;
 
     /**
@@ -21,11 +21,11 @@ class MainTest extends \PHPUnit_Framework_TestCase
         \samson\core\Error::$OUTPUT = false;
 
         // Create S3 mock
-        $this->request = $this->getMockBuilder('\samson\google\Request')
+        $this->request = $this->getMockBuilder('\samsonphp\google\translate\Request')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->instance = \samson\core\Service::getInstance('\samson\google\Translate');
+        $this->instance = \samson\core\Service::getInstance('\samsonphp\google\translate\Translate');
     }
 
     /** Test if we can pass parameters by reference to change them in event callback handler */
@@ -118,7 +118,7 @@ class MainTest extends \PHPUnit_Framework_TestCase
 
     public function testRequestClass()
     {
-        $request = new \samson\google\Request();
+        $request = new \samsonphp\google\translate\Request();
         $response = $request->get('url');
     }
 
