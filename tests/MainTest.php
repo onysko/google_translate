@@ -14,7 +14,7 @@ class MainTest extends \PHPUnit_Framework_TestCase
     public $request;
 
     /**
-     * 
+     *
      */
     public function setUp()
     {
@@ -114,6 +114,12 @@ class MainTest extends \PHPUnit_Framework_TestCase
 
         // Perform test
         $this->assertEquals('Translation has failed : Unknown error', $translated);
+    }
+
+    public function testRequestClass()
+    {
+        $request = new \samson\google\Request();
+        $response = $request->get('url');
     }
 
 }
