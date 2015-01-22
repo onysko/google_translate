@@ -24,6 +24,12 @@ class Translate extends CompressableService
     /** @var string Url string for translation request */
     protected $get;
 
+    /** @var bool Last request status */
+    protected $status = false;
+
+    /** @var Request Object for creating request on Google Translate API */
+    public $request;
+
     /** @var string Google API Key */
     public $apiKey;
 
@@ -33,21 +39,59 @@ class Translate extends CompressableService
     /** @var string Target language for translations */
     public $target;
 
+    protected function error($response)
+    {
+        // Failed status
+        $this->status = false;
+
+        // Create error message
+        return 'Translation has failed : '.$response['error']['message'];
+    }
+
+    protected function firstTranslated($response)
+    {
+        // Success status
+        $this->status = true;
+
+        // Get translated text from the response array
+        return $response['data']['translations'][0]['translatedText'];
+    }
+
+    /**
+     * Get translated text from Google Translate API answer
+     * @param $json mixed JSON data for parsing
+     * @return string Translated text
+     */
+    protected function getTranslated($json)
+    {
+        // Decode response from JSON to array
+        $response = json_decode($json, true);
+
+        // Default response error
+        $return = 'Translation has failed : Unknown error';
+
+        // If we have some response
+        if ($response != null) {
+            // Detect errors
+            $return = isset($response['error']) ? $this->error($response) : $this->firstTranslated($response);
+        }
+
+        // Return translated text or error message
+        return $return;
+    }
+
     /**
      * Module initialization
      */
     public function init(array $params = array())
     {
+        // Create default or users Request object
+        $this->request = (!isset($this->request) || !class_exists($this->request)) ? new Request() : new $this->request;
+
         // If configuration for API Key is not set
         if (!isset($this->apiKey)) {
             // Signal error
-            Event::fire(
-                'error',
-                array(
-                    $this,
-                    'Cannot initialize GoogleTranslate module - Google API Key does not exists'
-                )
-            );
+            Event::fire('error', array($this, 'Cannot initialize Translate module - Google API Key does not exists'));
         } else {
             // Create default get url
             $this->get = 'https://www.googleapis.com/language/translate/v2?key='.$this->apiKey;
@@ -89,32 +133,21 @@ class Translate extends CompressableService
         $text = rawurlencode($text);
 
         // Build url for translation
-        $this->get .= '&q='.$text.'&source='.$this->source.'&target='.$this->target;
+        $url = $this->get.'&q='.$text.'&source='.$this->source.'&target='.$this->target;
 
-        // Get result of get request in array format using curl
-        $curlHandler = curl_init($this->get);
-        curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($curlHandler);
-        curl_close($curlHandler);
-        $response = json_decode($response, true);
-
-        // If we have some response
-        if ($response != null) {
-            // Detect errors
-            if (isset($response['error'])) {
-                // Create error message
-                $return = 'Translation has failed : '.$response['error']['message'];
-            } else {
-                trace($response);
-                // Get translated text from the response array
-                $return = $response['data']['translations'][0]['translatedText'];
-            }
-        } else {
-            // Empty response error
-            $return = 'Translation has failed : Unknown error';
-        }
+        // Set default last request status
+        $this->status = false;
 
         // Return translated text or error message
-        return $return;
+        return $this->getTranslated($this->request->get($url));
+    }
+
+    /**
+     * Get bool status of last translation request
+     * @return bool Last request status
+     */
+    public function lastRequestStatus()
+    {
+        return $this->status;
     }
 }
