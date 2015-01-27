@@ -36,25 +36,57 @@ class MainTest extends \PHPUnit_Framework_TestCase
         $this->instance->request = & $this->request;
 
         $response = '
-        {
- "data": {
-  "translations": [
-   {
-    "translatedText": "Привіт"
-   }
-  ]
- }
-}
+            {
+             "data": {
+              "translations": [
+               {
+                "translatedText": "chien"
+               }
+              ]
+             }
+            }
         ';
         $this->request
             ->expects($this->once())
             ->method('get')
             ->willReturn($response);
 
-        $translated = $this->instance->source('ru')->target('uk')->trans('Привет');
+        $translated = $this->instance->source('en')->target('fr')->trans('dog');
 
         // Perform test
-        $this->assertEquals('Привіт', $translated);
+        $this->assertEquals('chien', $translated);
+        $this->assertEquals(true, $this->instance->lastRequestStatus());
+    }
+
+    public function testTranslateArray()
+    {
+        $this->instance->init();
+
+        $this->instance->request = & $this->request;
+
+        $response = '
+            {
+             "data": {
+              "translations": [
+               {
+                "translatedText": "chien"
+               },
+               {
+                "translatedText": "chat"
+               }
+              ]
+             }
+            }
+        ';
+        $this->request
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn($response);
+
+        $translated = $this->instance->source('en')->target('fr')->trans(array('dog', 'cat'));
+
+        // Perform test
+        $this->assertEquals(array('dog' => 'chien', 'cat' => 'chat'), $translated);
         $this->assertEquals(true, $this->instance->lastRequestStatus());
     }
 
@@ -90,7 +122,7 @@ class MainTest extends \PHPUnit_Framework_TestCase
         $translated = $this->instance->source('ua')->target('ru')->trans('Привет');
 
         // Perform test
-        $this->assertEquals('Translation has failed : Invalid Value', $translated);
+        $this->assertEquals('Invalid Value', $translated);
         $this->assertEquals(false, $this->instance->lastRequestStatus());
     }
 
@@ -113,7 +145,7 @@ class MainTest extends \PHPUnit_Framework_TestCase
         $translated = $this->instance->source('uk')->target('ru')->trans('Привет');
 
         // Perform test
-        $this->assertEquals('Translation has failed : Unknown error', $translated);
+        $this->assertEquals('Check your API Settings', $translated);
     }
 
     public function testRequestClass()
