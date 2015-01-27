@@ -51,10 +51,17 @@ $helloWorld = 'Hello World';
 
 // Translated text
 $bonjourLeMonde = $trans->source('gb')->target('fr')->trans($helloWorld);
-// Will return 'Invalid value'
+echo 'Translated string - "'.$bonjourLeMonde.'"; <br>';
 
 // Is false, because gb locale is not found in Google language codes.
-echo $trans->lastRequestStatus();
+echo 'Request status is '.$trans->lastRequestStatus();
+```
+
+Using this code you will get:
+
+```
+Translated string - "Invalid value";
+Request status is false
 ```
 
 ## Translate array of information using just one request
@@ -76,7 +83,7 @@ $myTranslatedStrings = $trans->source('en')->target('fr')->trans($myStrings);
 print_r($myTranslatedStrings);
 ```
 
-If your Google API Key s active, you will get this data:
+If your Google API Key is active, you will get this data:
 
 ```
 Array
