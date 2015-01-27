@@ -22,13 +22,13 @@ class Google_TranslateConfig extends \samson\core\Config
 
 ## Creating translate request
 
-After creating configuration you can make request to Google Translate API. To create simple request you must define source language of you text and target language which you want to get. To identify languages you can use ```source($source)``` and ```target($target)``` methods.
+After creating configuration you can make request to Google Translate API. To create simple request you must define source language of your text and target language which you want to get. To identify languages you can use ```source($source)``` and ```target($target)``` methods.
 
 For example you want to translate 'Hello World' to french:
 
 ```php
 /** @var \samson\google\Translate $trans Get SamsonPHP GoogleTranslate module */
-$trans = m('google_translate');
+$trans = & m('google_translate');
 
 // Source text
 $helloWorld = 'Hello World';
@@ -44,17 +44,48 @@ You can check status of your request using method ```lastRequestStatus()```:
 
 ```php
 /** @var \samson\google\Translate $trans Get SamsonPHP GoogleTranslate module */
-$trans = m('google_translate');
+$trans = & m('google_translate');
 
 // Source text
 $helloWorld = 'Hello World';
 
 // Translated text
 $bonjourLeMonde = $trans->source('gb')->target('fr')->trans($helloWorld);
-// Is false, because gb locale is not found in Google language codes.
-
 // Will return 'Invalid value'
-echo $trans->lastRequestStatus(); 
+
+// Is false, because gb locale is not found in Google language codes.
+echo $trans->lastRequestStatus();
+```
+
+## Translate array of information using just one request
+
+If you need to translate a lot of strings, the best way is define array of your strings as ```trans($data)``` parameter.
+Simple example:
+
+```php
+/** @var \samson\google\Translate $trans Get SamsonPHP GoogleTranslate module */
+$trans = & m('google_translate');
+
+// Source strings
+$myStrings = array('white dog', 'cat', 'rabbit', 'squirrel');
+
+// Translate it
+$myTranslatedStrings = $trans->source('en')->target('fr')->trans($myStrings);
+
+// Look at the response
+print_r($myTranslatedStrings);
+```
+
+If your Google API Key s active, you will get this data:
+
+```
+Array
+(
+    [white dog] => chien blanc
+    [cat] => chat
+    [rabbit] => lapin
+    [squirrel] => écureuil
+)
 ```
 
 This module is working using [Google Translate API](https://cloud.google.com/translate/)
