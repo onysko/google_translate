@@ -39,49 +39,96 @@ class Translate extends CompressableService
     /** @var string Target language for translations */
     public $target;
 
+    /**
+     * Create response with error message
+     * @param $response
+     * @return mixed
+     */
     protected function error($response)
     {
         // Failed status
         $this->status = false;
 
         // Create error message
-        return 'Translation has failed : '.$response['error']['message'];
-    }
-
-    protected function firstTranslated($response)
-    {
-        // Success status
-        $this->status = true;
-
-        // Get translated text from the response array
-        return $response['data']['translations'][0]['translatedText'];
+        return $response['error']['message'];
     }
 
     /**
-     * Get translated text from Google Translate API answer
-     * @param $json mixed JSON data for parsing
-     * @return string Translated text
+     * Create response as simple string
+     * @param $response array Parsed Google API response
+     * @return mixed Translated string
      */
-    protected function getTranslated($json)
+    protected function asString($response)
+    {
+        return $response[0]['translatedText'];
+    }
+
+    /**
+     * Create response as associative array
+     * @param $strings array Source - strings for translations
+     * @param $response array Target - parsed Google API response
+     * @return array Associative array with translations
+     */
+    protected function asArray($strings, $response)
+    {
+        /** @var array $return Associative array with translations */
+        $return = array();
+
+        // Build translations array
+        for ($i = 0; $i < sizeof($response); $i++) {
+            $return[$strings[$i]] = $response[$i]['translatedText'];
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param $strings array Strings for translation
+     * @param $response array Google API response
+     * @return string|array Translations
+     */
+    protected function createResponse($strings, $response)
+    {
+        // Get only necessary data from response array
+        $response = $response['data']['translations'];
+
+        // Success status
+        $this->status = true;
+
+        // Count translated strings
+        $length = sizeof($response);
+
+        /** @var array|string $return Associative array with translations or translated string */
+        $return = $length > 1 ? $this->asArray($strings, $response) : $this->asString($response);
+
+        return $return;
+    }
+
+    /**
+     * @param $strings array Strings for translating
+     * @param $json mixed JSON data for parsing
+     * @return string|array Translated data or translation error message
+     */
+    protected function translateData($strings, $json)
     {
         // Decode response from JSON to array
         $response = json_decode($json, true);
 
-        // Default response error
-        $return = 'Translation has failed : Unknown error';
+        /** @var array|string $return */
+        $return = 'Check your API Settings';
 
-        // If we have some response
         if ($response != null) {
             // Detect errors
-            $return = isset($response['error']) ? $this->error($response) : $this->firstTranslated($response);
+            $return = isset($response['error']) ? $this->error($response) : $this->createResponse($strings, $response);
         }
 
-        // Return translated text or error message
         return $return;
     }
 
     /**
      * Module initialization
+     * @param array $params
+     * @return bool
      */
     public function init(array $params = array())
     {
@@ -124,22 +171,27 @@ class Translate extends CompressableService
     }
 
     /**
-     * @param $text string Text for translation
-     * @return string Translated text
+     * @param $data string|array Data for translation
+     * @return string|array Translated data
      */
-    public function trans($text)
+    public function trans($data)
     {
-        // Encode source text in url format
-        $text = rawurlencode($text);
+        // Get only array values
+        $strings = !is_array($data) ? array($data) : array_values($data);
 
         // Build url for translation
-        $url = $this->get.'&q='.$text.'&source='.$this->source.'&target='.$this->target;
+        $url = $this->get.'&source='.$this->source.'&target='.$this->target;
+
+        // Add each of strings as url get parameter
+        foreach ($strings as $string) {
+            $url .= '&q='.rawurlencode($string);
+        }
 
         // Set default last request status
         $this->status = false;
 
-        // Return translated text or error message
-        return $this->getTranslated($this->request->get($url));
+        // Return translated array or error message
+        return $this->translateData($strings, $this->request->get($url));
     }
 
     /**
