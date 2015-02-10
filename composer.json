@@ -1,6 +1,6 @@
 {
     "name":"samsonphp/google_translate",
-    "description": "Google Translte SamsonPHP module",
+    "description": "Google Translate SamsonPHP module",
     "keywords": [ "php", "translate", "samsonos", "samsonphp"],
     "authors":[
         {

@@ -14,7 +14,7 @@ use samsonphp\event\Event;
 /**
  * Translation using Google Translate API
  * Class Translate
- * @package samson\google
+ * @package samsonphp\google\translate
  */
 class Translate extends CompressableService
 {
