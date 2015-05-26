@@ -133,7 +133,7 @@ class Translate extends CompressableService
     public function init(array $params = array())
     {
         // Create default or users Request object
-        $this->request = (!isset($this->request) || !class_exists($this->request)) ? new Request() : new $this->request;
+        $this->request = (!isset($this->request)) ? new Request() : new $this->request;
 
         // If configuration for API Key is not set
         if (!isset($this->apiKey)) {
